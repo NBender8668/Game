@@ -3,7 +3,7 @@
 #include "core.h"
 #include "Math/Math.h"
 #include "Math/Random.h"
-
+#include"Object/Actor.h"
 #include "Math/Color (2).h"
 #include "Math/Transform.h"
 #include "shape.h"
@@ -17,7 +17,9 @@
 
 
 
-nc::Shape ship;
+
+nc::Actor player;
+nc::Actor enemy;
 //nc::Shape ship{points,color};
 
 nc::Transform transform{ {400,300},4,0 };
@@ -64,17 +66,18 @@ bool Update(float dt) //delta time (1/60 = 0.16)
 	nc::Vector2 force;
 	if (Core::Input::IsPressed('W')) { force = nc::Vector2::foward * speed * dt; }
 	nc::Vector2 direction = force;
-	direction = nc::Vector2::Rotate(direction, transform.angle);
-	transform.position = transform.position + (direction * 2.0f);
+	direction = nc::Vector2::Rotate(direction, player.GetTransform().angle);
+	player.GetTransform().position = player.GetTransform().position + direction;
+	//transform.position = transform.position + (direction * 2.0f);
 
 	//rotate
-	if (Core::Input::IsPressed('A')) { transform.angle = transform.angle - (dt * nc::DegreesToRadians(360.0f)); };
-	if (Core::Input::IsPressed('D')) { transform.angle = transform.angle + (dt * nc::DegreesToRadians(360.0f)); };
+	if (Core::Input::IsPressed('A')) { player.GetTransform().angle = player.GetTransform().angle - (dt * nc::DegreesToRadians(360.0f)); };
+	if (Core::Input::IsPressed('D')) { player.GetTransform().angle = player.GetTransform().angle + (dt * nc::DegreesToRadians(360.0f)); };
 
 	//transform.position = nc::Clamp(transform.position, { 0,0 }, { 800,600 });
 
-	transform.position.x = nc::Clamp(transform.position.x, 0.0f, 800.0f);
-	transform.position.y = nc::Clamp(transform.position.y, 0.0f, 600.0f);
+	player.GetTransform().position.x = nc::Clamp(player.GetTransform().position.x, 0.0f, 800.0f);
+	player.GetTransform().position.y = nc::Clamp(player.GetTransform().position.y, 0.0f, 600.0f);
 	//if (Core::Input::IsPressed('A')) { position += nc::Vector2::left * speed * dt; }
 	//if (Core::Input::IsPressed('D')) { position += nc::Vector2::right * speed * dt; }
 	//if (Core::Input::IsPressed('W')) { position += nc::Vector2::up * speed * dt; }
@@ -103,7 +106,8 @@ void Draw(Core::Graphics& graphics)
 
 	if (gameover) graphics.DrawString(400, 300, "Game Over");
 
-	ship.Draw(graphics, transform);
+	player.Draw(graphics);
+	enemy.Draw(graphics);
 
 
 	
@@ -115,7 +119,9 @@ int main()
 	std::cout << ticks / 1000 << std::endl;
 	prevTime = GetTickCount();
 
-	ship.Load("Diamond_Ship.txt");
+	player.Load("player.txt");
+
+	enemy.Load("enemy.txt");
 	//ship.SetColor(nc::Color{ 1,1,1 });
 
 	char name[] = "CSC196";

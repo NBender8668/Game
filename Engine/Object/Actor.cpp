@@ -10,6 +10,8 @@ namespace nc
 		std::ifstream stream(filename);
 		// open stream
 	 // check if stream is open
+		 // set success to true
+		 // stream >> into transform
 		if (stream.is_open())
 		{
 			success = true;
@@ -17,8 +19,7 @@ namespace nc
 			stream >> m_transform;
 		};
 
-		 // set success to true
-		 // stream >> into transform
+
 		while (!stream.eof())
 		{
 			std::string shapename;
@@ -37,6 +38,6 @@ namespace nc
 
 	void nc::Actor::Draw(Core::Graphics& graphics)
 	{
-		
+		m_shape.Draw(graphics, m_transform);
 	}
 }
