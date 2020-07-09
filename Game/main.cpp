@@ -26,9 +26,10 @@ nc::Transform transform{ {400,300},4,0 };
 const size_t NUM_POINTS = 40;
 float speed = 300.0f;
 
+float t{ 0 };
+
 float frametime;
 float roundTime{ 0 };
-
 bool gameover{ false };
 
 DWORD prevTime;
@@ -40,6 +41,8 @@ bool Update(float dt) //delta time (1/60 = 0.16)
 	DWORD time = GetTickCount();
 	deltaTime = time - prevTime;
 	prevTime = time;
+
+	t = t + dt;
 
 	frametime = dt;
 	roundTime += dt;
@@ -65,9 +68,13 @@ bool Update(float dt) //delta time (1/60 = 0.16)
 	transform.position = transform.position + (direction * 2.0f);
 
 	//rotate
-	if (Core::Input::IsPressed('A')) { transform.angle = transform.angle - (dt * 5.0f); };
-	if (Core::Input::IsPressed('D')) { transform.angle = transform.angle + (dt * 5.0f); };
+	if (Core::Input::IsPressed('A')) { transform.angle = transform.angle - (dt * nc::DegreesToRadians(360.0f)); };
+	if (Core::Input::IsPressed('D')) { transform.angle = transform.angle + (dt * nc::DegreesToRadians(360.0f)); };
 
+	//transform.position = nc::Clamp(transform.position, { 0,0 }, { 800,600 });
+
+	transform.position.x = nc::Clamp(transform.position.x, 0.0f, 800.0f);
+	transform.position.y = nc::Clamp(transform.position.y, 0.0f, 600.0f);
 	//if (Core::Input::IsPressed('A')) { position += nc::Vector2::left * speed * dt; }
 	//if (Core::Input::IsPressed('D')) { position += nc::Vector2::right * speed * dt; }
 	//if (Core::Input::IsPressed('W')) { position += nc::Vector2::up * speed * dt; }
@@ -86,9 +93,18 @@ void Draw(Core::Graphics& graphics)
 	graphics.DrawString(10, 20, std::to_string(1.0f / frametime).c_str());
 	graphics.DrawString(10, 30, std::to_string(deltaTime /1000.0f).c_str());
 
+	float v = (std::sin(t)+1.0f)* 0.5f; //0 - 2
+
+	nc::Color c = nc::Lerp(nc::Color{ 0,0,1 }, nc::Color{ 1,0,0 }, t);
+	graphics.SetColor(c);
+
+	nc::Vector2 p = nc::Lerp(nc::Vector2{ 400,300 }, nc::Vector2{ 400,100 }, v);
+	graphics.DrawString(p.x, p.y, "Some Game");
+
 	if (gameover) graphics.DrawString(400, 300, "Game Over");
 
 	ship.Draw(graphics, transform);
+
 
 	
 };

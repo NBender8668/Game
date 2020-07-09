@@ -32,9 +32,11 @@ namespace nc
 
 	void nc::Actor::Update(float dt)
 	{
+
 	}
 
 	void nc::Actor::Draw(Core::Graphics& graphics)
 	{
+		
 	}
 }
