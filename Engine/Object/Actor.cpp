@@ -12,6 +12,8 @@ namespace nc
 	 // check if stream is open
 		 // set success to true
 		 // stream >> into transform
+
+
 		if (stream.is_open())
 		{
 			success = true;
@@ -40,4 +42,14 @@ namespace nc
 	{
 		m_shape.Draw(graphics, m_transform);
 	}
+
+	void Actor::Load(std::istream& stream)
+	{
+		stream >> m_transform;
+
+		std::string shapename;
+		stream >> shapename;
+		m_shape.Load(shapename);
+	}
+
 }

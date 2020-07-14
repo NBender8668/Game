@@ -2,32 +2,32 @@
 #include "shape.h"
 #include "Math/Color (2).h"
 #include <fstream>
-
+#include <string>
 bool nc::Shape::Load(const std::string& filename)
 {
 	bool success = false;
 
 	std::ifstream stream(filename);
 
+
 	if (stream.is_open())
 	{
 		success = true;
-
+		//get color
 		stream >> m_color;
+		//get number of points
+		std::string line;
+		std::getline(stream, line);
+		size_t size;
+		size = stoi(line);
 
-		while (!stream.eof())
+		for (size_t i = 0; i < size; i++)
 		{
-			Vector2 point;
-			stream >> point;
-		
-			if (!stream.eof())
-			{
-				m_points.push_back(point);
-			}
+			Vector2 v;
+			stream >> v;
+			m_points.push_back(v);
 		}
-		
-		
-		
+
 		//read points
 
 		stream.close();
