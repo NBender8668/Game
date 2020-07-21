@@ -9,33 +9,19 @@
 #include "shape.h"
 #include "Actors/Player.h"
 #include "Actors/Enemy.h"
+#include "Object/Scene.h"
 #include <vector>
 #include <string>
-
-
-//std::vector<nc::Vector2> points = { { 4, 0 },{0,3},{-4,0},{0,-3},{4,0} };
-
-//nc::Color color{ 1,5,7 };
+#include <list>
 
 
 
-
-Player player;
-
-
-Enemy enemy;
-//nc::Shape ship{points,color};
-
-nc::Transform transform{ {400,300},4,0 };
-
-
-const size_t NUM_POINTS = 40;
-
-float t{ 0 };
+nc::Scene scene;
 
 float frametime;
-float roundTime{ 0 };
-bool gameover{ false };
+float spawntimer{0};
+float t{ 0 };
+
 
 DWORD prevTime;
 DWORD deltaTime;
@@ -47,26 +33,32 @@ bool Update(float dt) //delta time (1/60 = 0.16)
 	deltaTime = time - prevTime;
 	prevTime = time;
 
-	t = t + dt;
-
 	frametime = dt;
-	roundTime += dt;
 
-	//if (roundTime >= 60.0f) gameover = true;
+	spawntimer += dt;
 
-	//if(gameover) dt = 0;
+
+	if (spawntimer >= 3.0f)
+	{
+		spawntimer = 0.0f;
+
+		nc::Actor* enemy = new  Enemy;
+		enemy->Load("enemy.txt");
+		dynamic_cast<Enemy*>(enemy)->SetTarget(scene.GetActor<Player>());
+		dynamic_cast<Enemy*>(enemy)->SetThurst(nc::random(50, 100));
+		enemy->GetTransform().position = nc::Vector2{ nc::random(0,800),nc::random(0,600) };
+
+		scene.AddActor(enemy);
+
+	};
 
 	bool quit = Core::Input::IsPressed(Core::Input::KEY_ESCAPE);
-
 	int x;
 	int y;
-	Core::Input::GetMousePos(x,y);
+	
+	scene.Update(dt);
 
-	player.Update(dt);
-	enemy.Update(dt);
-	//nc::Vector2 target = nc::Vector2{ x,y };
-	//nc::Vector2 direction = target - position; // (head <- tail)
-	//direction.Normalize();
+
 	
 	return quit;
 }
@@ -88,27 +80,36 @@ void Draw(Core::Graphics& graphics)
 
 	graphics.DrawString(p.x, p.y, "Some Game");
 
-	if (gameover) graphics.DrawString(400, 300, "Game Over");
+	
 
-	player.Draw(graphics);
-	enemy.Draw(graphics);
-
+	
+	scene.Draw(graphics);
 
 	
 };
 
 int main()
 {
+	scene.Startup();
+
 	DWORD ticks = GetTickCount(); //how many tick per second (1000)
 	std::cout << ticks / 1000 << std::endl;
 	prevTime = GetTickCount();
 
-	player.Load("player.txt");
+	nc::Actor* player = new Player;
+	player->Load("player.txt");
+	scene.AddActor(player);
 
-	enemy.Load("enemy.txt");
-	enemy.SetTarget(&player);
-
-	//ship.SetColor(nc::Color{ 1,1,1 });
+	for (int i = 0; i < 10; i++)
+	{
+		nc::Actor* enemy = new  Enemy;
+		enemy->Load("enemy.txt");
+		dynamic_cast<Enemy*>(enemy)->SetTarget(scene.GetActor<Player>());
+		dynamic_cast<Enemy*>(enemy)->SetThurst(nc::random(50, 100));
+		enemy->GetTransform().position = nc::Vector2{ nc::random(0,800),nc::random(0,600) };
+		
+		scene.AddActor(enemy);
+	}
 
 	char name[] = "CSC196";
 	Core::Init(name, 800, 600);
@@ -117,5 +118,7 @@ int main()
 
 	Core::GameLoop();
 	Core::Shutdown();
+
+	scene.Shutdown();
 };
 

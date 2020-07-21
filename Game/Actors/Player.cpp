@@ -1,5 +1,7 @@
 #include "Player.h"
 #include "Math/Math.h"
+#include "projectile.h"
+#include"Object/Scene.h"
 #include <fstream>
 bool Player::Load(const std::string& filename)
 {
@@ -26,6 +28,20 @@ bool Player::Load(const std::string& filename)
 
 void Player::Update(float dt)
 {
+	m_fireTimer += dt;
+
+	if (Core::Input::IsPressed(VK_SPACE) && m_fireTimer >= m_fireRate)
+	{
+		m_fireTimer = 0;
+
+		Projectile* projectile = new  Projectile;
+		projectile->Load("projectile.txt");
+		projectile->GetTransform().position = m_transform.position;
+		projectile->GetTransform().angle = m_transform.angle;
+		m_scene->AddActor(projectile);
+	}
+
+
 	float thrust = 300.0f;
 	nc::Vector2 velocity;
 
@@ -54,6 +70,8 @@ void Player::Update(float dt)
 
 	if (m_transform.position.y > 600) m_transform.position.y = 0;	
 	if (m_transform.position.y < 0) m_transform.position.y = 600;
+
+	m_transform.Update();
 
 //player.GetTransform().position.x = nc::Clamp(player.GetTransform().position.x, 0.0f, 800.0f);
 //player.GetTransform().position.y = nc::Clamp(player.GetTransform().position.y, 0.0f, 600.0f);

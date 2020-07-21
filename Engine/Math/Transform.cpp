@@ -15,9 +15,25 @@ namespace nc
 		std::getline(stream, line);
 		t.angle = stof(line);
 
-	
+
 
 
 		return stream;
+	};
+
+	void Transform::Update()
+	{
+		Matrix33 mxScale;
+		mxScale.Scale(scale);
+
+
+		Matrix33 mxRotate;
+		mxRotate.Rotate(angle);
+
+		Matrix33 mxTranslate;
+		mxTranslate.Translate(position);
+
+		
+		matrix = mxScale * mxRotate * mxTranslate;
 	}
 }

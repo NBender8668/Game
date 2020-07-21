@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "Math/Math.h"
+#include "Object/Scene.h"
 #include <fstream>
 #include <string>
 bool Enemy::Load(const std::string& filename)
@@ -27,15 +28,22 @@ bool Enemy::Load(const std::string& filename)
 
 void Enemy::Update(float dt)
 {
-	nc::Vector2 force;
-	float thrust = 300.0f;
-	nc::Vector2 velocity;
-
-	nc::Vector2 direction = force;
-    direction = m_target->GetTransform().position - m_transform.position;
-	nc::Vector2 enemyVelocity = direction.Normalized() * 100.0f;
+	
+   nc::Vector2 direction = m_target->GetTransform().position - m_transform.position;
+	nc::Vector2 enemyVelocity = direction.Normalized() * m_thrust;
 	m_transform.position = m_transform.position + enemyVelocity * dt;
 	m_transform.angle = std::atan2(direction.y, direction.x) + nc::DegreesToRadians(90.0f);
+
+    m_transform.Update();
+}
+
+void Enemy::OnCollision(Actor* actor)
+{
+    if(actor->GetType() == eType::PROJECTILE)
+    {
+        m_destory = true;
+        //m_scene->RemoveActor(actor);
+    }
 }
 
 
