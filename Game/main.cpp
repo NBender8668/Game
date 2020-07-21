@@ -10,6 +10,7 @@
 #include "Actors/Player.h"
 #include "Actors/Enemy.h"
 #include "Object/Scene.h"
+#include "ParticleSystem.h"
 #include <vector>
 #include <string>
 #include <list>
@@ -17,6 +18,7 @@
 
 
 nc::Scene scene;
+nc::ParticleSystem particleSystem;
 
 float frametime;
 float spawntimer{0};
@@ -55,9 +57,12 @@ bool Update(float dt) //delta time (1/60 = 0.16)
 	bool quit = Core::Input::IsPressed(Core::Input::KEY_ESCAPE);
 	int x;
 	int y;
-	
-	scene.Update(dt);
+	Player* player = scene.GetActor<Player>();
 
+	particleSystem.Create(player->GetTransform().position, player->GetTransform().angle + nc::PI, 20, 1, nc::Color{1,1,1},1,100,200);
+
+	particleSystem.Update(dt);
+	scene.Update(dt);
 
 	
 	return quit;
@@ -80,17 +85,15 @@ void Draw(Core::Graphics& graphics)
 
 	graphics.DrawString(p.x, p.y, "Some Game");
 
-	
-
-	
 	scene.Draw(graphics);
-
+	particleSystem.Draw(graphics);
 	
 };
 
 int main()
 {
 	scene.Startup();
+	particleSystem.Startup();
 
 	DWORD ticks = GetTickCount(); //how many tick per second (1000)
 	std::cout << ticks / 1000 << std::endl;
@@ -120,5 +123,6 @@ int main()
 	Core::Shutdown();
 
 	scene.Shutdown();
+	particleSystem.Shutdown();
 };
 

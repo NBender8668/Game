@@ -161,6 +161,8 @@
     <ClInclude Include="Math\Vector2.h" />
     <ClInclude Include="Object\Actor.h" />
     <ClInclude Include="Object\Scene.h" />
+    <ClInclude Include="particles.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="shape.h" />
   </ItemGroup>
@@ -171,6 +173,7 @@
     <ClCompile Include="Math\Vector2.cpp" />
     <ClCompile Include="Object\Actor.cpp" />
     <ClCompile Include="Object\Scene.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
